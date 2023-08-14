@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 
-
 @Slf4j
 @Service
 public class CarService {
@@ -57,7 +56,6 @@ public class CarService {
         return new ResponseEntity<>(car, HttpStatus.OK);
 
     }
-
 
 
     public ResponseEntity<?> deleteCar(Long id) {
