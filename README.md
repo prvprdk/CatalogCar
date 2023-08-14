@@ -1,6 +1,8 @@
 # CatalogCar
-Initial commit 
+
+
 Spring Boot PostgresSQL Hibernate
+
 Цель написать справочник автомобилей с возможностью добавления и удаления записей.
 
 https://catalogcar.onrender.com/api/car
