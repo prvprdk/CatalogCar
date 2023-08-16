@@ -1,14 +1,14 @@
-package com.example.catalogOfCars.service;
+package com.example.catalogOfCars.utils;
 
 import com.example.catalogOfCars.domain.Car;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-public class SortingService {
+@Component
+public class SortUtil {
     public List<Car> sorted(String sort, List<Car> cars) {
         switch (sort) {
             case "brand" -> {

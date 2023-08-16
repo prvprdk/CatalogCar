@@ -15,4 +15,6 @@ public interface  CarRepo  extends JpaRepository <Car, Long> {
 
    @Query ("SELECT c.date FROM Car c ORDER BY ID DESC limit 1")
    LocalDateTime getLast ();
+
+   Boolean existsByNumber (String number);
 }

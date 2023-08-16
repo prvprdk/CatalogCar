@@ -4,8 +4,10 @@ import com.example.catalogOfCars.domain.Car;
 import com.example.catalogOfCars.domain.CarStat;
 import com.example.catalogOfCars.service.CarService;
 import com.example.catalogOfCars.service.CarStatService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -30,8 +32,8 @@ public class Controller {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody Car car) {
-        return carService.add(car);
+    public ResponseEntity<?> add(@Valid @RequestBody Car car, BindingResult bindingResult) {
+        return carService.add(car, bindingResult);
     }
 
     @DeleteMapping("{id}")

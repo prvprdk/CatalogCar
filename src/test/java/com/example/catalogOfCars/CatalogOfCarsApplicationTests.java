@@ -1,7 +1,7 @@
 package com.example.catalogOfCars;
 
 import com.example.catalogOfCars.domain.Car;
-import com.example.catalogOfCars.service.FilterService;
+import com.example.catalogOfCars.utils.FilterUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CatalogOfCarsApplicationTests {
 
 	@Autowired
-	private FilterService filterService;
+	private FilterUtil filterService;
 
 
 	@Test

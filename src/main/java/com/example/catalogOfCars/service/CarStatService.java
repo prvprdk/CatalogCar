@@ -6,17 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CarStatService {
+public class CarStatService   {
     @Autowired
     CarRepo carRepo;
 
     public CarStat get() {
-        return CarStat
-                .builder()
-                .firstRecord(carRepo.getFirst())
-                .lastRecord(carRepo.getLast())
-                .count(String.valueOf(carRepo.count()))
-                .build();
+      return new CarStat(carRepo.getFirst(), carRepo.getLast(),String.valueOf(carRepo.count()));
     }
 
 }

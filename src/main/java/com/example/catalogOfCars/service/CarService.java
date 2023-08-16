@@ -1,13 +1,18 @@
 package com.example.catalogOfCars.service;
 
-import com.example.catalogOfCars.Errors.AppError;
 import com.example.catalogOfCars.domain.Car;
+import com.example.catalogOfCars.errors.AppError;
+import com.example.catalogOfCars.errors.ValidError;
 import com.example.catalogOfCars.repo.CarRepo;
+import com.example.catalogOfCars.utils.FilterUtil;
+import com.example.catalogOfCars.utils.SortUtil;
+import com.example.catalogOfCars.utils.ValidUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,34 +26,48 @@ public class CarService {
     @Autowired
     private CarRepo carRepo;
     @Autowired
-    private SortingService sortedService;
+    private SortUtil sortedService;
     @Autowired
-    private FilterService filterService;
+    private FilterUtil filterService;
+    @Autowired
+    private ValidUtils validUtils;
 
     public List<Car> getList(String sort, Map<String, ArrayList<String>> filter) {
 
-        if ((sort != null && !sort.isEmpty()) && (filter != null && !filter.isEmpty())) {
+        boolean ofFilter = filter != null && !filter.isEmpty();
+        boolean ofSort = sort != null && !sort.isEmpty();
+
+        if (ofFilter && ofSort) {
             return sortedService.sorted(sort, filterService.filterCar(carRepo.findAll(), filter));
-        }
-
-        if (sort != null && !sort.isEmpty()) {
+        } else if (ofSort) {
             return sortedService.sorted(sort, carRepo.findAll());
-        }
-
-        if (filter != null && !filter.isEmpty()) {
+        } else if (ofFilter) {
             return filterService.filterCar(carRepo.findAll(), filter);
+        } else {
+            return carRepo.findAll();
         }
-
-        return carRepo.findAll();
     }
 
-    public ResponseEntity<?> add(Car car) {
+    public ResponseEntity<?> add(Car car, BindingResult bindingResult) {
 
-        if (car.getId() != null && carRepo.existsById(car.getId())) {
-            log.info(String.format("Car id:%d exists. Save is not possible", car.getId()));
-            return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), "Car exists"), HttpStatus.CONFLICT);
+        if (bindingResult.hasErrors()) {
 
+            return new ResponseEntity<>(new ValidError(HttpStatus.BAD_REQUEST.value(),
+                    "not valid",
+                    LocalDateTime.now(),
+                    validUtils.getErrorsValid(bindingResult)), HttpStatus.BAD_REQUEST);
         }
+
+
+        Boolean carFromDb = carRepo.existsByNumber(car.getNumber());
+
+        if (carFromDb) {
+            return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(),
+                    String.format("Car number: %s exists. Save is not possible", car.getNumber()),
+                    LocalDateTime.now()),
+                    HttpStatus.CONFLICT);
+        }
+
         car.setDate(LocalDateTime.now());
         carRepo.save(car);
         log.info("Add " + car);
@@ -67,7 +86,8 @@ public class CarService {
         } catch (Exception e) {
             log.error(e.getMessage() + "Delete is not possible");
             return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(),
-                    String.format("Car with id %d not found", id)), HttpStatus.NOT_FOUND);
+                    String.format("Car with id %d not found", id), LocalDateTime.now()), HttpStatus.NOT_FOUND);
         }
     }
+
 }
