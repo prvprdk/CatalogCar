@@ -8,7 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public interface  CarRepo  extends JpaRepository <Car, Long> {
+
+public interface  CarRepo  extends JpaRepository <Car, Long>, RepoCustomizedFilter<Car> {
+
+
 
    @Query ("SELECT c.date FROM Car c ORDER BY ID ASC limit 1")
    LocalDateTime getFirst ();

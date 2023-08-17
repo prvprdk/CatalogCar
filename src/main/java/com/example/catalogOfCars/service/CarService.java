@@ -4,7 +4,7 @@ import com.example.catalogOfCars.domain.Car;
 import com.example.catalogOfCars.errors.AppError;
 import com.example.catalogOfCars.errors.ValidError;
 import com.example.catalogOfCars.repo.CarRepo;
-import com.example.catalogOfCars.utils.FilterUtil;
+import com.example.catalogOfCars.utils.QueryFilterUtil;
 import com.example.catalogOfCars.utils.SortUtil;
 import com.example.catalogOfCars.utils.ValidUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +28,6 @@ public class CarService {
     @Autowired
     private SortUtil sortedService;
     @Autowired
-    private FilterUtil filterService;
-    @Autowired
     private ValidUtils validUtils;
 
     public List<Car> getList(String sort, Map<String, ArrayList<String>> filter) {
@@ -37,12 +35,15 @@ public class CarService {
         boolean ofFilter = filter != null && !filter.isEmpty();
         boolean ofSort = sort != null && !sort.isEmpty();
 
+        assert filter != null;
+        String query = QueryFilterUtil.getQuery(filter);
+
         if (ofFilter && ofSort) {
-            return sortedService.sorted(sort, filterService.filterCar(carRepo.findAll(), filter));
+            return sortedService.sorted(sort, carRepo.getCarsByFilter(query));
         } else if (ofSort) {
             return sortedService.sorted(sort, carRepo.findAll());
         } else if (ofFilter) {
-            return filterService.filterCar(carRepo.findAll(), filter);
+            return carRepo.getCarsByFilter(query);
         } else {
             return carRepo.findAll();
         }
